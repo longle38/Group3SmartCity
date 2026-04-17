@@ -1,17 +1,3 @@
-"""
-Tests for IntersectionRepository (full CRUD).
-
-How to run:
-    1. Make sure your .env file is set up with real DB credentials
-    2. Make sure schema.sql and data.sql have been loaded into PostgreSQL
-    3. From the traffic-management/ root folder, run:
-           pip install psycopg[binary] psycopg_pool python-dotenv
-           python -m pytest tests/test_intersection_repo.py -v
-
-These are integration tests — they hit the real database.
-Each test cleans up after itself so it does not leave junk data.
-"""
-
 import pytest
 from datetime import date
 from models.intersection import Intersection
