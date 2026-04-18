@@ -4,59 +4,67 @@ PostgreSQL-backed traffic management data layer with a menu-driven Python CLI (p
 
 ## Prerequisites
 
-- **Python** 3.10 or newer
+- **Python** 3.9 or newer (3.10+ recommended)
 - **PostgreSQL** 14 or newer (server running and reachable from your machine)
-- A database user that can create objects and insert data (for local development, the default `postgres` superuser is common)
+- A database role that can create objects and load data  
 
 ## Repository layout
 
 
-| Path                     | Purpose                                                                   |
-| ------------------------ | ------------------------------------------------------------------------- |
-| `postgresql/schema.sql`  | DDL: tables, constraints, indexes, triggers (create when available)       |
-| `postgresql/data.sql`    | Sample `INSERT` data (create when available)                              |
-| `postgresql/queries.sql` | Six or more documented analytical queries (GP2 Part 2)                    |
-| `src/`                   | Appplication code (`config`, `models`, `repositories`, `services`, `cli`) |
-| `src/tests/`             | Optional `pytest` tests (require a loaded database)                       |
-| `.env.example`           | Template for database connection variables                                |
-| `requirements.txt`       | Python dependencies                                                       |
+| Path                     | Purpose                                                                  |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `postgresql/schema.sql`  | DDL: tables, constraints, enums                                          |
+| `postgresql/data.sql`    | Sample `INSERT` data                                                     |
+| `postgresql/queries.sql` | Documented analytical queries                                            |
+| `src/`                   | Application code (`config`, `models`, `repositories`, `services`, `cli`) |
+| `src/tests/`             | Optional `pytest` tests (require a loaded database)                      |
+| `.env.example`           | Template for database connection variables                               |
+| `requirements.txt`       | Python dependencies                                                      |
 
 
 ## Database setup
 
-1. **Create an empty database** (name can match `DB_NAME` in `.env`; default is `traffic_management`):
+1. **Create an empty database** (name should match `DB_NAME` in `.env`; default is `traffic_management`):
   ```bash
    createdb traffic_management
   ```
-   Or from `psql` as a superuser:
-2. **Load schema and data** once `postgresql/schema.sql` and `postgresql/data.sql` exist in this repo:
+   If `createdb` is not on your PATH, create it from `psql` as a role that can create databases.
+2. **Load schema and data** from the **project root**:
   ```bash
-   psql -U postgres -d traffic_management -f postgresql/schema.sql
-   psql -U postgres -d traffic_management -f postgresql/data.sql
+   psql -h 127.0.0.1 -p 5432 -d traffic_management -f postgresql/schema.sql
+   psql -h 127.0.0.1 -p 5432 -d traffic_management -f postgresql/data.sql
   ```
-   Adjust `-U` and connection options if your PostgreSQL user or host differs.
-3. **Optional**: run Part 2 queries for grading or ad hoc checks:
+   Adjust `**-h**`, `**-p**`, and **role** to match your machine. On a Homebrew Mac you often omit `-U` (uses your OS user) or pass `**-U "$(whoami)"`**. Do **not** assume `-U postgres` unless that role exists.
+3. **Optional:** run Part 2 queries:
   ```bash
-   psql -U postgres -d traffic_management -f postgresql/queries.sql
+   psql -h 127.0.0.1 -p 5432 -d traffic_management -f postgresql/queries.sql
   ```
 
 ## Environment configuration
 
-1. Copy the example env file and edit values for your machine:
+1. Copy the example env file and edit if needed:
   ```bash
    cp .env.example .env
   ```
-2. Set at least `DB_PASSWORD` if your PostgreSQL user requires a password. The application reads:
-  - `DB_HOST` (default `localhost`)
-  - `DB_PORT` (default `5432`)
-  - `DB_NAME` (default `traffic_management`)
-  - `DB_USER` (default `postgres`)
-  - `DB_PASSWORD` (default empty string)
-3. **Do not commit `.env`**; it should stay local and out of version control. Only `.env.example` belongs in the repo.
+2. Variables the app reads (see `src/config/database.py`):
+
+  | Variable             | Notes                                                                          |
+  | -------------------- | ------------------------------------------------------------------------------ |
+  | `DB_HOST`            | Default `localhost`. `**127.0.0.1**`                                           |
+  | `DB_PORT`            | Default `5432`.                                                                |
+  | `DB_NAME`            | Default `traffic_management`.                                                  |
+  | `DB_USER`            | If unset or empty, the app uses `**$USER**`                                    |
+  | `DB_PASSWORD`        | Often empty for local trust/peer auth; set if your server requires a password. |
+  | `DB_CONNECT_TIMEOUT` | Optional; default `10` (seconds) in the connection string.                     |
+  | `DB_POOL_TIMEOUT`    | Optional; default `60` (pool checkout timeout).                                |
+  | `PG_GSSENCMODE`      | Optional; default `**disable**`.                                               |
+  | `CLI_DEBUG`          | Set to `1` to print tracebacks for unexpected CLI errors.                      |
+
+3. **Do not commit `.env`**; keep it local. Only `.env.example` belongs in the repo.
 
 ## Python setup
 
-From the **project root** (the directory that contains `src/` and `requirements.txt`):
+From the **project root** (directory that contains `src/` and `requirements.txt`):
 
 ```bash
 python3 -m venv .venv
@@ -66,33 +74,28 @@ pip install -r requirements.txt
 
 ## Run the CLI
 
-From the project root, with the virtual environment activated:
+From the project root, with dependencies installed:
 
 ```bash
 PYTHONPATH=src python3 -m cli.main
 ```
 
-Alternatively, running the entry script directly also adds `src` to the module path:
+Alternatively:
 
 ```bash
 python3 src/cli/main.py
 ```
 
-The menu supports intersection lookup, high-incident reporting, system metrics, and incident counts by severity. A working database that matches the application schema is required.
+(`src/cli/main.py` prepends `src` to `sys.path` when run as a script.)
+
+The menu supports intersection lookup, high-incident intersections (90-day window), system metrics, and incident counts by severity. You need a database loaded from `postgresql/schema.sql` and `postgresql/data.sql` (or equivalent).
 
 ## Tests (optional)
 
-Tests under `src/tests/` expect PostgreSQL to be running and the same `.env` (or defaults) to point at a database where the schema is loaded.
-
-Install test tooling if needed:
+Tests under `src/tests/` expect PostgreSQL running and `.env` pointing at a database where the schema is loaded.
 
 ```bash
 pip install pytest pytest-cov
-```
-
-Run tests from the project root:
-
-```bash
 PYTHONPATH=src pytest src/tests/ -v
 ```
 

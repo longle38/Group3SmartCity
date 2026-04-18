@@ -23,11 +23,11 @@
 --   parking_facility: 11
 --   emergency_facility: 11
 --   emergency_route: 22
---   emergency_route_path: 128
+--   emergency_route_path: 123
 --   emergency_route_usage: 88
 
 -- traffic_control_zone (6 rows)
-INSERT INTO traffic_control_zone OVERRIDING SYSTEM VALUE (zone_number, default_speed_limit, enforcement_level, zone_type, restriction_type, restriction_details) VALUES
+INSERT INTO traffic_control_zone (zone_number, default_speed_limit, enforcement_level, zone_type, restriction_type, restriction_details) OVERRIDING SYSTEM VALUE VALUES
 (1, 25, 5, 'downtown', 'time-based', 'Peak-hour curb loading restricted weekdays 4-7 PM'),
 (2, 30, 3, 'residential', NULL, NULL),
 (3, 40, 4, 'industrial', 'vehicle-type', 'Freight corridor access prioritized for commercial trucks'),
@@ -36,7 +36,7 @@ INSERT INTO traffic_control_zone OVERRIDING SYSTEM VALUE (zone_number, default_s
 (6, 35, 2, 'residential', 'vehicle-type', 'Through-truck traffic prohibited except local delivery');
 
 -- intersection (56 rows)
-INSERT INTO intersection OVERRIDING SYSTEM VALUE (intersection_id, intersection_name, latitude, longitude, intersection_type, traffic_handling_capacity, installation_date, jurisdiction_district, elevation) VALUES
+INSERT INTO intersection (intersection_id, intersection_name, latitude, longitude, intersection_type, traffic_handling_capacity, installation_date, jurisdiction_district, elevation) OVERRIDING SYSTEM VALUE VALUES
 (1, 'K St NW & 23rd St NW', 38.89, -77.048, '4-way', 3200, '2008-02-03', 'Ward 2', 12.5),
 (2, 'K St NW & 22nd St NW', 38.89, -77.043, '4-way', 3240, '2011-03-05', 'Ward 2', 13.4),
 (3, 'K St NW & 21st St NW', 38.89, -77.038, '4-way', 3280, '2014-04-07', 'Ward 2', 14.3),
@@ -154,7 +154,7 @@ INSERT INTO signalized_intersection (intersection_id) VALUES
 (56);
 
 -- sensor (190 rows)
-INSERT INTO sensor OVERRIDING SYSTEM VALUE (sensor_id, intersection_id, sensor_status, sensor_type, installation_date) VALUES
+INSERT INTO sensor (sensor_id, intersection_id, sensor_status, sensor_type, installation_date) OVERRIDING SYSTEM VALUE VALUES
 (1, 1, 'active', 'radar', '2011-02-03'),
 (2, 1, 'active', 'camera', '2012-03-05'),
 (3, 1, 'active', 'lidar', '2013-04-07'),
@@ -347,7 +347,7 @@ INSERT INTO sensor OVERRIDING SYSTEM VALUE (sensor_id, intersection_id, sensor_s
 (190, 56, 'active', 'radar', '2018-11-03');
 
 -- sensor_reading (380 rows)
-INSERT INTO sensor_reading OVERRIDING SYSTEM VALUE (sensor_reading_id, sensor_id, vehicle_speed, occupancy, traffic_flow, reading_timestamp) VALUES
+INSERT INTO sensor_reading (sensor_reading_id, sensor_id, vehicle_speed, occupancy, traffic_flow, reading_timestamp) OVERRIDING SYSTEM VALUE VALUES
 (1, 1, 21, 15, 127, '2026-04-15 10:07:00'),
 (2, 1, 23, 24, 150, '2026-04-16 11:20:00'),
 (3, 2, 24, 20, 144, '2026-04-15 13:14:00'),
@@ -730,7 +730,7 @@ INSERT INTO sensor_reading OVERRIDING SYSTEM VALUE (sensor_reading_id, sensor_id
 (380, 190, 29, 78, 363, '2026-04-16 14:23:00');
 
 -- traffic_signal (190 rows)
-INSERT INTO traffic_signal OVERRIDING SYSTEM VALUE (signal_id, intersection_id, approach_direction, power_source, signal_type, timing_mode, warranty_information) VALUES
+INSERT INTO traffic_signal (signal_id, intersection_id, approach_direction, power_source, signal_type, timing_mode, warranty_information) OVERRIDING SYSTEM VALUE VALUES
 (1, 1, 'north', 'grid', 'LED', 'fixed', 'Installed under signal modernization contract; warranty valid through 2027'),
 (2, 1, 'south', 'grid', 'pedestrian', 'adaptive', 'Installed under signal modernization contract; warranty valid through 2028'),
 (3, 1, 'east', 'grid', 'incandescent', 'emergency', 'Installed under signal modernization contract; warranty valid through 2029'),
@@ -923,7 +923,7 @@ INSERT INTO traffic_signal OVERRIDING SYSTEM VALUE (signal_id, intersection_id, 
 (205, 42, 'east', 'grid', 'LED', 'adaptive', 'Roundabout entry signal package expansion installed in 2023; warranty valid through 2028');
 
 -- maintenance_crew (11 rows)
-INSERT INTO maintenance_crew OVERRIDING SYSTEM VALUE (crew_id, supervisor, specialization, certification_level, available) VALUES
+INSERT INTO maintenance_crew (crew_id, supervisor, specialization, certification_level, available) OVERRIDING SYSTEM VALUE VALUES
 (1, 'Alicia Gomez', 'electrical', 'Level III', TRUE),
 (2, 'Marcus Reed', 'mechanical', 'Level II', TRUE),
 (3, 'Priya Nair', 'civil', 'Level II', FALSE),
@@ -937,7 +937,7 @@ INSERT INTO maintenance_crew OVERRIDING SYSTEM VALUE (crew_id, supervisor, speci
 (11, 'Nina Patel', 'mechanical', 'Level II', TRUE);
 
 -- road_segment (55 rows)
-INSERT INTO road_segment OVERRIDING SYSTEM VALUE (segment_id, street_name, has_sidewalk, has_bike_lane, grade, length, surface_type, speed_limit, lane_width, number_of_lanes, from_intersection_id, to_intersection_id) VALUES
+INSERT INTO road_segment (segment_id, street_name, has_sidewalk, has_bike_lane, grade, length, surface_type, speed_limit, lane_width, number_of_lanes, from_intersection_id, to_intersection_id) OVERRIDING SYSTEM VALUE VALUES
 (1, 'K St NW', TRUE, FALSE, -1.5, 0.21, 'concrete', 25, 10.5, 2, 1, 2),
 (2, 'K St NW', TRUE, FALSE, -0.9, 0.24, 'asphalt', 25, 11, 2, 2, 3),
 (3, 'K St NW', TRUE, FALSE, -0.3, 0.27, 'asphalt', 25, 11.5, 2, 3, 4),
@@ -995,7 +995,7 @@ INSERT INTO road_segment OVERRIDING SYSTEM VALUE (segment_id, street_name, has_s
 (55, '20th St NW', TRUE, FALSE, 1.7, 0.28, 'asphalt', 35, 11, 6, 44, 52);
 
 -- weather_station (6 rows)
-INSERT INTO weather_station OVERRIDING SYSTEM VALUE (weather_station_id, intersection_id, operational_status, data_transmission_frequency_seconds) VALUES
+INSERT INTO weather_station (weather_station_id, intersection_id, operational_status, data_transmission_frequency_seconds) OVERRIDING SYSTEM VALUE VALUES
 (1, 4, 'active', 300),
 (2, 12, 'active', 300),
 (3, 20, 'maintenance', 600),
@@ -1025,7 +1025,7 @@ INSERT INTO weather_station_capability (weather_station_id, capability) VALUES
 (6, 'visibility');
 
 -- weather_reading (24 rows)
-INSERT INTO weather_reading OVERRIDING SYSTEM VALUE (reading_id, weather_station_id, reading_timestamp, temperature, humidity, precipitation, wind_speed, visibility) VALUES
+INSERT INTO weather_reading (reading_id, weather_station_id, reading_timestamp, temperature, humidity, precipitation, wind_speed, visibility) OVERRIDING SYSTEM VALUE VALUES
 (1, 1, '2026-04-16 06:07:00', 49.5, 46, 0, 7.3, 9.35),
 (2, 1, '2026-04-16 10:16:00', 52.7, 51, 0, 8.1, 9.35),
 (3, 1, '2026-04-16 14:25:00', 55.9, 56, 0.12, 8.9, 8.95),
@@ -1052,7 +1052,7 @@ INSERT INTO weather_reading OVERRIDING SYSTEM VALUE (reading_id, weather_station
 (24, 6, '2026-04-16 18:09:00', 66.6, 81, 0, 16.2, 8.6);
 
 -- incident (78 rows)
-INSERT INTO incident OVERRIDING SYSTEM VALUE (incident_number, incident_type, severity_level, reporting_source, reported_timestamp, verified_timestamp, resolved_timestamp, number_of_lanes_blocked, intersection_id, road_segment_id) VALUES
+INSERT INTO incident (incident_number, incident_type, severity_level, reporting_source, reported_timestamp, verified_timestamp, resolved_timestamp, number_of_lanes_blocked, intersection_id, road_segment_id) OVERRIDING SYSTEM VALUE VALUES
 (1, 'road_hazard', 'minor', 'officer', '2026-01-25 09:11:00', '2026-01-25 09:17:00', '2026-01-25 09:47:00', 1, 6, NULL),
 (2, 'special_event', 'minor', 'camera', '2026-02-01 17:22:00', '2026-02-01 17:29:00', '2026-02-01 17:59:00', 1, NULL, 7),
 (3, 'vehicle_breakdown', 'minor', 'sensor', '2026-02-08 19:33:00', '2026-02-08 19:41:00', '2026-02-08 20:11:00', 1, 16, NULL),
@@ -1133,7 +1133,7 @@ INSERT INTO incident OVERRIDING SYSTEM VALUE (incident_number, incident_type, se
 (78, 'vehicle_breakdown', 'critical', 'camera', '2026-01-24 16:18:00', '2026-01-24 16:29:00', NULL, 4, NULL, 15);
 
 -- maintenance_task (110 rows)
-INSERT INTO maintenance_task OVERRIDING SYSTEM VALUE (task_id, maintenance_status, maintenance_type, scheduled_date, scheduled_time, estimated_duration_minutes, priority_level, assigned_crew, actual_duration_minutes) VALUES
+INSERT INTO maintenance_task (task_id, maintenance_status, maintenance_type, scheduled_date, scheduled_time, estimated_duration_minutes, priority_level, assigned_crew, actual_duration_minutes) OVERRIDING SYSTEM VALUE VALUES
 (1, 'completed', 'corrective', '2026-01-21', '2026-01-21 09:13:00', 45, 'moderate', 2, 40),
 (2, 'completed', 'inspection', '2026-01-25', '2026-01-25 11:26:00', 60, 'high', 3, 60),
 (3, 'completed', 'upgrade', '2026-01-29', '2026-01-29 14:39:00', 75, 'critical', 4, 80),
@@ -1347,8 +1347,8 @@ INSERT INTO road_segment_maintenance_task (task_id, segment_id) VALUES
 (92, 20),
 (93, 22),
 (94, 24),
-(95, 191),
-(96, 193),
+(95, 31),
+(96, 38),
 (97, 30),
 (98, 32),
 (99, 34),
@@ -1470,7 +1470,7 @@ INSERT INTO zone_control_management (zone_number, intersection_id) VALUES
 (4, 56);
 
 -- facility (22 rows)
-INSERT INTO facility OVERRIDING SYSTEM VALUE (facility_id, facility_name, total_capacity, facility_type) VALUES
+INSERT INTO facility (facility_id, facility_name, total_capacity, facility_type) OVERRIDING SYSTEM VALUE VALUES
 (1, 'Georgetown Medical Center', 320, 'hospital'),
 (2, 'Dupont Medical Pavilion', 280, 'hospital'),
 (3, 'Capitol Regional Hospital', 240, 'hospital'),
@@ -1495,7 +1495,7 @@ INSERT INTO facility OVERRIDING SYSTEM VALUE (facility_id, facility_name, total_
 (22, 'Gallery Place Garage', 340, 'parking_garage');
 
 -- operation_hour (154 rows)
-INSERT INTO operation_hour OVERRIDING SYSTEM VALUE (operation_hour_id, facility_id, day_of_week, open_time, close_time) VALUES
+INSERT INTO operation_hour (operation_hour_id, facility_id, day_of_week, open_time, close_time) OVERRIDING SYSTEM VALUE VALUES
 (1, 1, 'Mon', '00:01:00', '23:59:00'),
 (2, 1, 'Tue', '00:01:00', '23:59:00'),
 (3, 1, 'Wed', '00:01:00', '23:59:00'),
@@ -1680,7 +1680,7 @@ INSERT INTO emergency_facility (facility_id, capability, phone_number, email) VA
 (11, 'Downtown patrol coordination', '202-555-0123', 'central.dispatch@dcpolice.gov');
 
 -- emergency_route (22 rows)
-INSERT INTO emergency_route OVERRIDING SYSTEM VALUE (route_id, start_intersection_id, end_intersection_id, emergency_facility_id, priority_level, estimated_travel_time, route_length, recommended_speed, alternative_route_id) VALUES
+INSERT INTO emergency_route (route_id, start_intersection_id, end_intersection_id, emergency_facility_id, priority_level, estimated_travel_time, route_length, recommended_speed, alternative_route_id) OVERRIDING SYSTEM VALUE VALUES
 (1, 4, 40, 1, 2, 23, 2.04, 30, NULL),
 (2, 13, 26, 2, 3, 18, 1.35, 35, 1),
 (3, 22, 14, 3, 4, 19, 1.28, 40, NULL),
@@ -1725,12 +1725,7 @@ INSERT INTO emergency_route_path (route_id, segment_id, path_order) VALUES
 (3, 11, 4),
 (3, 12, 5),
 (4, 27, 1),
-(4, 26, 2),
-(4, 25, 3),
-(4, 25, 4),
-(4, 26, 5),
-(4, 27, 6),
-(4, 28, 7),
+(4, 28, 2),
 (5, 51, 1),
 (5, 52, 2),
 (5, 53, 3),
@@ -1836,7 +1831,7 @@ INSERT INTO emergency_route_path (route_id, segment_id, path_order) VALUES
 (22, 47, 7);
 
 -- emergency_route_usage (88 rows)
-INSERT INTO emergency_route_usage OVERRIDING SYSTEM VALUE (emergency_route_usage_id, route_id, usage_timestamp, response_time_in_minutes) VALUES
+INSERT INTO emergency_route_usage (emergency_route_usage_id, route_id, usage_timestamp, response_time_in_minutes) OVERRIDING SYSTEM VALUE VALUES
 (1, 1, '2026-02-02 07:07:00', 22),
 (2, 1, '2026-02-11 16:18:00', 27),
 (3, 1, '2026-02-20 07:29:00', 28),
