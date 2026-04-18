@@ -16,7 +16,7 @@ class Sensor:
             sensor_id=row["sensor_id"],
             intersection_id=row["intersection_id"],
             sensor_type=row["sensor_type"],
-            installation_date=date.fromisoformat(row["installation_date"]),
+            installation_date=row["installation_date"],
             manufacturer=row["manufacturer"],
             status=row.get("status"),
         )
