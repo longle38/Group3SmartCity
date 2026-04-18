@@ -1,6 +1,5 @@
 """
 Business logic for the CLI: combines repositories and cross-table reads.
-SQL for multi-table aggregates lives here so cli/main.py stays free of queries.
 """
 
 from __future__ import annotations

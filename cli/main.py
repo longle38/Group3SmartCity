@@ -1,5 +1,4 @@
 """
-Menu-driven CLI (Task 3.4). No SQL here — calls TrafficService only.
 Run from project root: PYTHONPATH=src python3 -m cli.main
 """
 
@@ -121,7 +120,7 @@ def run_cli() -> None:
                 )
                 print(
                     "Fix: start the server locally, or set DB_HOST / DB_PORT / DB_NAME "
-                    "in a .env file to match your instance (e.g. Docker mapped port)."
+                    "in a .env file."
                 )
             except psycopg.Error as exc:
                 print(f"\nDatabase error: {exc}")
