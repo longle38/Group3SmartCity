@@ -1,7 +1,7 @@
 import pytest
 from datetime import date
 from models.intersection import Intersection
-from repositories.intersection_repo import IntersectionRepository
+from repositories.postgres.intersection_repo import IntersectionRepository
 from config.database import DatabaseConfig
 
 

@@ -1,5 +1,5 @@
 """
-Run from project root: PYTHONPATH=src python3 -m cli.main
+Run from project root: python3 -m cli.main
 """
 
 from __future__ import annotations

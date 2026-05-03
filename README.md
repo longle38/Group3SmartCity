@@ -1,4 +1,4 @@
-# Traffic Management (GP2)
+# Traffic Management Group 3
 
 PostgreSQL-backed traffic management data layer with a menu-driven Python CLI (psycopg3, repository and service layers).
 
@@ -6,7 +6,7 @@ PostgreSQL-backed traffic management data layer with a menu-driven Python CLI (p
 
 - **Python** 3.9 or newer (3.10+ recommended)
 - **PostgreSQL** 14 or newer (server running and reachable from your machine)
-- A database role that can create objects and load data  
+- A database role that can create objects and load data
 
 ## Repository layout
 

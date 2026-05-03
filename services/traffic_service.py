@@ -11,8 +11,8 @@ from psycopg.rows import dict_row
 
 from config.database import DatabaseConfig
 from models.intersection import Intersection
-from repositories.incident_repo import IncidentRepository
-from repositories.intersection_repo import IntersectionRepository
+from repositories.postgres.incident_repo import IncidentRepository
+from repositories.postgres.intersection_repo import IntersectionRepository
 
 
 class TrafficService:
