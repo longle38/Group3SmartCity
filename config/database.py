@@ -6,8 +6,7 @@ import psycopg_pool
 from dotenv import load_dotenv
 from psycopg_pool import PoolTimeout
 
-# Project root = parent of `src/` (this file lives in src/config/)
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(_PROJECT_ROOT / ".env")
 
 
