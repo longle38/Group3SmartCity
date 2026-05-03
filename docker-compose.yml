@@ -1,0 +1,146 @@
+# =============================================================================
+# ENPM818T -- GP3 Scenario 1 (Traffic)
+# Docker Compose starter: PostgreSQL + MongoDB + Redis + app
+# -----------------------------------------------------------------------------
+# What this file provides:
+#   - postgres   : persistent SQL DB, seeded from ./postgresql/*.sql
+#   - mongodb    : persistent document store
+#   - mongo-seed : one-shot sidecar that runs your mongodb/mongo_*.js files
+#   - redis      : in-memory key/value + pub/sub
+#   - app        : your Python application (requires Dockerfile)
+#
+# Every DB has a healthcheck. The app waits for each DB to be
+# healthy (not just started) before it launches, so you don't need
+# to add retry logic just to survive startup.
+#
+# Usage:
+#   docker-compose up --build           # start everything, foreground
+#   docker-compose up -d                # start detached
+#   docker-compose logs -f app          # tail app logs
+#   docker-compose down                 # stop (keeps data volumes)
+#   docker-compose down -v              # also wipe DB data
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${PG_USER:-enpm}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-enpm818t}
+      POSTGRES_DB: ${PG_DB:-traffic_management}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Init scripts run in lexical order. Mount with numeric prefixes so
+      # schema loads before data (see scenario1_docker_starter.rst).
+      # Do not mount queries.sql here: those are analytical SELECTs; one
+      # query uses ORDER BY RANDOM() with DISTINCT and fails in batch init.
+      - ./postgresql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./postgresql/data.sql:/docker-entrypoint-initdb.d/02_data.sql:ro
+    ports:
+      - "${PG_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # MongoDB
+  # ---------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # mongo-seed -- one-shot sidecar that seeds MongoDB
+  #
+  # Unlike Postgres, Mongo has no /docker-entrypoint-initdb.d pattern,
+  # so we run your setup scripts with a throwaway container.
+  # Idempotent: re-running should be safe if your scripts use
+  # upsert-style inserts (or you 'down -v' first).
+  # ---------------------------------------------------------------------------
+  mongo-seed:
+    image: mongo:7
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./mongodb:/workdir:ro
+    working_dir: /workdir
+    entrypoint: ["bash", "-c"]
+    command:
+      - |
+        set -e
+        echo "mongo-seed: loading mongo_setup.js"
+        mongosh --host mongodb --quiet --file mongo_setup.js
+        echo "mongo-seed: loading mongo_data.js"
+        mongosh --host mongodb --quiet --file mongo_data.js
+        echo "mongo-seed: done."
+    restart: "no"
+
+  # ---------------------------------------------------------------------------
+  # Redis (in-memory)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Your Python application
+  #
+  # NOTE: Inside the Compose network, services reach each other by
+  # SERVICE NAME, not localhost. Your app sees:
+  #   DB_HOST=postgres   MONGO_HOST=mongodb   REDIS_HOST=redis
+  # (Your local dev shell, running outside Compose, still uses
+  #  localhost -- that's what the published port mappings are for.)
+  # ---------------------------------------------------------------------------
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongo-seed:
+        condition: service_completed_successfully
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${PG_DB:-traffic_management}
+      DB_USER: ${PG_USER:-enpm}
+      DB_PASSWORD: ${PG_PASSWORD:-enpm818t}
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DB: ${MONGO_DB:-traffic_management}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    stdin_open: true       # keep STDIN open for the menu-driven CLI
+    tty: true              # allocate a pseudo-TTY
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:

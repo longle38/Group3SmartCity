@@ -1,4 +1,4 @@
-use traffic_management;
+db = db.getSiblingDB("traffic_management");
 
 db.traffic_flow_events.deleteMany({});
 db.sensor_readings.deleteMany({});

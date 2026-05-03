@@ -1,5 +1,4 @@
-// Create database and collections
-use traffic_management;
+db = db.getSiblingDB("traffic_management");
 
 [
   "traffic_flow_events",
