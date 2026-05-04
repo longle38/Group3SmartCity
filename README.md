@@ -30,45 +30,49 @@ docker compose up --build
 
 Service discovery inside the network uses `postgres`, `mongodb`, `redis`. From the host, use `localhost` and the mapped ports (default **5432** / **27017** / **6379** if unchanged in `.env`).
 
-Run Mongo scripts with `mongosh --file`, not stdin redirection.
+Run Mongo scripts with `mongosh --file`.
 
 ## Architecture: data placement
 
-| Data | PostgreSQL | MongoDB | Redis |
-|------|:----------:|:-------:|:-----:|
-| Intersection / road / zone / facility metadata | ✓ | | |
-| Sensor + traffic signal configuration | ✓ | | |
-| Maintenance schedules + crews | ✓ | | |
-| Emergency routes + usage | ✓ | | |
-| Weather station metadata | ✓ | | |
-| Traffic flow events, sensor readings | | ✓ | |
-| Incident reports (nested documents) | | ✓ | |
-| Weather readings (Mongo collection) | | ✓ | |
-| Live signal state, per-intersection metrics | | | ✓ |
-| Congestion rankings, recent-incidents queue | | | ✓ |
-| Traffic alerts (pub/sub) | | | ✓ |
+
+| Data                                           | PostgreSQL | MongoDB | Redis |
+| ---------------------------------------------- | ---------- | ------- | ----- |
+| Intersection / road / zone / facility metadata | ✓          |         |       |
+| Sensor + traffic signal configuration          | ✓          |         |       |
+| Maintenance schedules + crews                  | ✓          |         |       |
+| Emergency routes + usage                       | ✓          |         |       |
+| Weather station metadata                       | ✓          |         |       |
+| Traffic flow events, sensor readings           |            | ✓       |       |
+| Incident reports (nested documents)            |            | ✓       |       |
+| Weather readings (Mongo collection)            |            | ✓       |       |
+| Live signal state, per-intersection metrics    |            |         | ✓     |
+| Congestion rankings, recent-incidents queue    |            |         | ✓     |
+| Traffic alerts (pub/sub)                       |            |         | ✓     |
+
 
 PostgreSQL: relational reference data. MongoDB: high-volume / flexible documents. Redis: low-latency state and messaging; not the primary durable store.
 
 ## Repository layout
 
-| Path | Purpose |
-|------|---------|
-| `postgresql/schema.sql`, `data.sql` | DDL + seed |
-| `postgresql/queries.sql` | Extra SQL (`psql` as needed) |
-| `mongodb/mongo_setup.js`, `mongo_data.js`, `mongo_queries.js` | Mongo setup, seed, queries |
-| `config/`, `models/`, `repositories/postgres/`, `services/`, `cli/` | Python application |
-| `docker-compose.yml`, `Dockerfile` | Container stack |
-| `.env.example` | Environment template |
 
-Packages sit at the repository root (no `src/` directory).
+| Path                                                                | Purpose                      |
+| ------------------------------------------------------------------- | ---------------------------- |
+| `postgresql/schema.sql`, `data.sql`                                 | DDL + seed                   |
+| `postgresql/queries.sql`                                            | Extra SQL (`psql` as needed) |
+| `mongodb/mongo_setup.js`, `mongo_data.js`, `mongo_queries.js`       | Mongo setup, seed, queries   |
+| `config/`, `models/`, `repositories/postgres/`, `services/`, `cli/` | Python application           |
+| `docker-compose.yml`, `Dockerfile`                                  | Container stack              |
+| `.env.example`                                                      | Environment template         |
+
+
+Packages sit at the repository root (no `src/` directory for GP3?).
 
 ## Environment
 
 Copy `.env.example` to `.env`.
 
-- Host CLI: `DB_*` for Postgres (`config/database.py`). Empty `DB_USER` defaults to the current OS username.  
-- Compose pulls `PG_*`, `MONGO_DB`, and ports from `.env` where `docker-compose.yml` references them. Mongo and Redis have no password on the compose network.
+- Host CLI: `DB_`* for Postgres (`config/database.py`). Empty `DB_USER` defaults to the current OS username.  
+- Compose pulls `PG_`*, `MONGO_DB`, and ports from `.env` where `docker-compose.yml` references them. Mongo and Redis have no password on the compose network.
 
 ## Python
 
@@ -82,12 +86,10 @@ pip install -r requirements.txt
 
 Cross-database menu entries:
 
-1. **Intersection dashboard** — Postgres intersection row, recent Mongo traffic/sensor data, Redis live metrics / signal snapshot.  
+1. **Intersection dashboard** — Postgres intersection row, recent Mongo traffic/sensor data, Redis live metrics / signal snapshot.
 2. **Report new incident** — relational writes to Postgres, incident document in Mongo, Redis pub/sub and recent-incidents queue.
 
 Optional third: **top congested intersections** — Redis ranking + Postgres intersection metadata.
-
-Keep existing GP2 actions; add unified entries in `cli/main.py`.
 
 ## Run the CLI
 
@@ -106,3 +108,4 @@ Requires Postgres with schema/data loaded and `.env` configured:
 ```bash
 python3 -m pytest tests/ -v
 ```
+
