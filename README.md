@@ -89,8 +89,6 @@ Cross-database menu entries:
 1. **Intersection dashboard** — Postgres intersection row, recent Mongo traffic/sensor data, Redis live metrics / signal snapshot.
 2. **Report new incident** — relational writes to Postgres, incident document in Mongo, Redis pub/sub and recent-incidents queue.
 
-Optional third: **top congested intersections** — Redis ranking + Postgres intersection metadata.
-
 ## Run the CLI
 
 Without Docker: load Postgres schema and seed data, then:
